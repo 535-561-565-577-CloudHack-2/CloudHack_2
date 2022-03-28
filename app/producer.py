@@ -36,7 +36,7 @@ def add():
     #     return str(e)
     
     channel = connection.channel()
-    channel.queue_declare(queue='task_queue', durable=True)
+    channel.queue_declare(queue='ride_match', durable=True)
 
     sleep_time = request.json['time']
     # .get('time')
@@ -44,7 +44,7 @@ def add():
 
     channel.basic_publish(
         exchange='',
-        routing_key='task_queue',
+        routing_key='ride_match',
         body=str(sleep_time),
         properties=pika.BasicProperties(
             delivery_mode=2,  # make message persistent
@@ -52,6 +52,20 @@ def add():
 
     connection.close()
     return " [x] Sent: %s" % str(sleep_time)
+
+
+@app.route('/new_ride_matching_consumer', methods=['POST']) 
+def register():
+    '''
+        POST request body format
+
+        {
+            "consumer_id": "integer",
+            "name": "string"
+        }
+
+    '''
+    
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port='5000')
