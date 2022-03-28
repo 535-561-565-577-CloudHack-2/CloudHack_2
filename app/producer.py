@@ -5,13 +5,15 @@ import json
 
 app = Flask(__name__)
 
+REGITRATION_LIST = []
+
 @app.route("/")
 def index():
     return "OK"
 
 
 @app.route('/new_ride', methods=['POST'])
-def add():
+def new_ride():
     """
     POST req body
 
@@ -37,6 +39,7 @@ def add():
     
     channel = connection.channel()
     channel.queue_declare(queue='ride_match', durable=True)
+    channel.queue_declare(queue='database', durable=True)
 
     sleep_time = request.json['time']
     # .get('time')
@@ -45,26 +48,41 @@ def add():
     channel.basic_publish(
         exchange='',
         routing_key='ride_match',
-        body=str(sleep_time),
+        body=json.dumps(request.json),
+        properties=pika.BasicProperties(
+            delivery_mode=2,  # make message persistent
+        ))
+
+    channel.basic_publish(
+        exchange='',
+        routing_key='database',
+        body=json.dumps(request.json),
         properties=pika.BasicProperties(
             delivery_mode=2,  # make message persistent
         ))
 
     connection.close()
-    return " [x] Sent: %s" % str(sleep_time)
+    return " [x] Sent: %s" % json.dumps(request.json)
 
 
 @app.route('/new_ride_matching_consumer', methods=['POST']) 
 def register():
-    '''
-        POST request body format
+    """
+    POST request body format
 
-        {
-            "consumer_id": "integer",
-            "name": "string"
-        }
+    {
+        "consumer_id": "integer",
+        "name": "string"
+    }
 
-    '''
+    """
+    global REGITRATION_LIST
+
+    ip_address = request.remote_addr
+
+    registration = {"name": request.json.get('consumer_id'), "ip_address": ip_address}
+    REGITRATION_LIST.append(registration)
+    return json.dumps(REGITRATION_LIST)
     
 
 if __name__ == '__main__':
