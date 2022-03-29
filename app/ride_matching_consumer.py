@@ -7,9 +7,9 @@ import json
 import sys
 
 def main():
-    server_ip = os.environ.get('SERVERIP')
+    server_ip = os.environ.get('PRODUCER_ADDRESS')
     # server_port = os.environ.get('server_port')
-    consumer_id = os.environ.get('CONSUMERID')
+    consumer_id = os.environ.get('CONSUMER_ID')
 
     def ride_matching_callback(ch, method, properties, body):
         ride_details = json.loads(body)
