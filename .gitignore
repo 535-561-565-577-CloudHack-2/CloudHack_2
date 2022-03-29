@@ -4,3 +4,6 @@ env/*
 
 # pycache
 app/__pycache__/*
+
+# vscode
+.vscode/*
