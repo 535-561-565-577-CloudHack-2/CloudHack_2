@@ -1,7 +1,6 @@
 # Use this file to setup the database consumer that stores the ride information in the database
 # Code for Ride Matching Consumer
 
-import requests
 import pika
 import os 
 import time
@@ -14,7 +13,7 @@ def main():
         ride_details = json.loads(body)
         print(" [x] Received %r" % body.decode())
         
-        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        myclient = pymongo.MongoClient("mongodb")
         mydb = myclient["ride_details_db"] # create DB  
         rides = mydb["ride_details"] # create collection
 
@@ -24,15 +23,18 @@ def main():
         else:
             print('Collection not created yet..')
 
-
-    try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
-    except pika.exceptions.AMQPConnectionError as exc:
-        print("Failed to connect to RabbitMQ service. Message wont be sent.")
+    started = False
+    while not started:
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitMQ_server"))
+            started = True
+        except pika.exceptions.AMQPConnectionError as exc:
+            print("Failed to connect to RabbitMQ service. Message wont be sent. Waiting for sometime..")
+            time.sleep(5)
 
     channel = connection.channel()
 
-    # channel.queue_declare(queue='database')
+    channel.queue_declare(queue='database', durable=True)
 
     channel.basic_consume(
         queue='database', 

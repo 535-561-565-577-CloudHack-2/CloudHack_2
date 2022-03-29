@@ -14,4 +14,4 @@ RUN pip install -r requirements_ride_consumer.txt
 COPY ./ride_matching_consumer.py /app/ride_matching_consumer.py 
 
 # Run the comsumer file
-CMD ["python", "ride_matching_consumer.py"]
+CMD ["python", "-u", "ride_matching_consumer.py"]

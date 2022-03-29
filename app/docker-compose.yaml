@@ -6,9 +6,15 @@ services:
       - 5672:5672
       - 15672:15672
     #restart:
+  mongodb:
+    image: mongo
+    ports:
+      - 27017
   producer:
     #image: 
-    build: Dockerfile_producer
+    build:
+      context: .
+      dockerfile: Dockerfile_producer
     container_name: producer
     #restart: 
     ports:
@@ -17,21 +23,26 @@ services:
       - rabbitMQ_server
   ride_matching:
     #image: 
-    build: Dockerfile_ride_matching
+    build:
+      context: .
+      dockerfile: Dockerfile_ride_matching
     container_name: ride_matching_consumer
     depends_on:
       - producer
     environment:
       - CONSUMER_ID=1
-      - PRODUCER_ADDRESS=producer:5000
-    deploy:
-      mode: replicated
-      replicas: 2
+      - PRODUCER_ADDRESS=http://producer:5000
+    #deploy:
+    #  mode: replicated
+    #  replicas: 2
   ride_database:
     #image: 
-    build: Dockerfile_database
+    build:
+      context: .
+      dockerfile: Dockerfile_database
     container_name: ride_database_consumer
     #restart: 
     depends_on:
       - producer
+      - mongodb
   

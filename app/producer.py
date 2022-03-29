@@ -1,7 +1,7 @@
 from flask import Flask, request
 import pika
 import json
-
+import time
 
 app = Flask(__name__)
 
@@ -27,12 +27,14 @@ def new_ride():
 
     """
 
-    
-    # connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-    try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbit"))
-    except pika.exceptions.AMQPConnectionError as exc:
-        return "Failed to connect to RabbitMQ service. Message wont be sent."
+    started = False
+    while not started:
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitMQ_server"))
+            started = True
+        except pika.exceptions.AMQPConnectionError as exc:
+            print("Failed to connect to RabbitMQ service. Message wont be sent. Waiting for sometime..")
+            time.sleep(5)
 
     # except Exception as e:
     #     return str(e)
@@ -45,6 +47,9 @@ def new_ride():
     # .get('time')
     # .form.get('time')
 
+    print(" [x] Received %r" % request.json)
+    
+    print(" [x] Publishing to ride match queue")
     channel.basic_publish(
         exchange='',
         routing_key='ride_match',
@@ -53,6 +58,7 @@ def new_ride():
             delivery_mode=2,  # make message persistent
         ))
 
+    print(" [x] Publishing to database")
     channel.basic_publish(
         exchange='',
         routing_key='database',
@@ -82,6 +88,8 @@ def register():
 
     registration = {"name": request.json.get('consumer_id'), "ip_address": ip_address}
     REGITRATION_LIST.append(registration)
+    print("REGITRATION_LIST: ", REGITRATION_LIST)
+
     return json.dumps(REGITRATION_LIST)
     
 

@@ -14,4 +14,4 @@ RUN pip install -r requirements_database.txt
 COPY ./database_consumer.py /app/database_consumer.py 
 
 # Run the comsumer file
-CMD ["python", "database_consumer.py"]
+CMD ["python", "-u", "database_consumer.py"]

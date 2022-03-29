@@ -19,18 +19,22 @@ def main():
         print(" [x] Task %r done by %r" %  (method.delivery_tag, consumer_id))
 
     try:
+        print("server_ip", server_ip)
         register = requests.post(server_ip+'/new_ride_matching_consumer', json={'consumer_id': consumer_id, "name": "Rabbit"}, verify=False)
 
         if(register.status_code == 200):
-            try:
-                connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
-            except pika.exceptions.AMQPConnectionError as exc:
-                print("Failed to connect to RabbitMQ service. Message wont be sent.")
+            started = False
+            while not started:
+                try:
+                    connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitMQ_server"))
+                    started = True
+                except pika.exceptions.AMQPConnectionError as exc:
+                    print("Failed to connect to RabbitMQ service. Message wont be sent. Waiting for sometime..")
+                    time.sleep(5)
 
-            connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
             channel = connection.channel()
 
-            # channel.queue_declare(queue='ride_match')
+            channel.queue_declare(queue='ride_match', durable=True)
 
             channel.basic_consume(
                 queue='ride_match', 
@@ -44,7 +48,7 @@ def main():
             print('Failed Request', register.status_code)
 
     except Exception as e:
-        print('Invalid IP Address')
+        print('Exception in Main: ' + str(e))
 
 
 if __name__ == '__main__':
