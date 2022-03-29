@@ -30,7 +30,6 @@ def main():
     except pika.exceptions.AMQPConnectionError as exc:
         print("Failed to connect to RabbitMQ service. Message wont be sent.")
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
 
     # channel.queue_declare(queue='database')
