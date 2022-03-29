@@ -1,11 +1,17 @@
+# Base image
 FROM python:3.8
 
+# Create directory on the image
 WORKDIR /app
 
-COPY ./requirements_ride_matching.txt /app/requirements_ride_matching.txt 
+# Copy requirements
+COPY ./requirements_ride_consumer.txt /app/requirements_ride_consumer.txt 
 
-RUN pip install -r requirements_ride_matching.txt
+# Install requirements
+RUN pip install -r requirements_ride_consumer.txt
 
+# Copy consumer file
 COPY ./ride_matching_consumer.py /app/ride_matching_consumer.py 
 
+# Run the comsumer file
 CMD ["python", "ride_matching_consumer.py"]
