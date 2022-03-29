@@ -3,31 +3,49 @@ import requests
 import pika
 import os 
 import time
+import json
+import sys
 
-def ride_matching_callback(ch, method, proerties, body):
-    sleeptime = float(body)
-    print(" [x] Received %r" % body.decode())
-    time.sleep(sleeptime)
-    print(" [x] Done %r" % body.task_id)
+def main():
+    server_ip = os.environ.get('SERVERIP')
+    # server_port = os.environ.get('server_port')
+    consumer_id = os.environ.get('CONSUMERID')
 
-server_ip = os.environ.get('server_ip')
-server_port = os.environ.get('server_port')
-consumer_id = os.environ.get('consumer_id')
+    def ride_matching_callback(ch, method, properties, body):
+        ride_details = json.loads(body)
+        print(" [x] Received %r" % body.decode())
+        # print(" [x] Time is: %r" % ride_details['time'])
+        time.sleep(ride_details['time'])
+        print(" [x] Task %r done by %r" %  (method.delivery_tag, consumer_id))
 
-register = requests.post(server_ip+'/new_ride_matching_consumer', data={'consumer_id': consumer_id})
+    print(server_ip+'/new_ride_matching_consumer')
+    register = requests.post(server_ip+'/new_ride_matching_consumer', json={'consumer_id': consumer_id, "name": "Rabbit"}, verify=False)
 
-if(register.status_code == 200):
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    channel = connection.channel()
+    if(register.status_code == 200):
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
 
-    channel.queue_declare(queue='ride_match')
+        # channel.queue_declare(queue='ride_match')
 
-    channel.basic_consume(
-        queue='ride_match', 
-        auto_ack=True, 
-        on_message_callback=ride_matching_callback
-    )
+        channel.basic_consume(
+            queue='ride_match', 
+            auto_ack=True, 
+            on_message_callback=ride_matching_callback
+        )
+
+        print(' [*] Waiting for messages. To exit press CTRL+C')
+        channel.start_consuming()
+    else:
+        print('Failed Request', register.status_code)
 
 
-
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
 

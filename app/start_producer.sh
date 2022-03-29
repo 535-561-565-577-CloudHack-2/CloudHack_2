@@ -2,5 +2,5 @@
 
 source ../venv/bin/activate
 
-export FLASK_APP=producer
+export FLASK_APP=producer.py
 flask run
