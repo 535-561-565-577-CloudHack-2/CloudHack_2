@@ -21,6 +21,8 @@ services:
       - 5000:5000
     depends_on:
       - rabbitMQ_server
+    #environment:
+    #  - FLASK_ENV=development
   ride_matching:
     #image: 
     build:
