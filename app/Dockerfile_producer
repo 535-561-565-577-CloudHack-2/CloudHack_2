@@ -1,1 +1,21 @@
 # Dockerfile for Producer 
+
+
+# Pull python image
+FROM python:3.8
+
+# Working directory of producer - /app
+WORKDIR /app
+
+# Copy requirements file
+COPY ./requirements_producer.txt /app/requirements.txt
+
+# Install requirements
+RUN pip3 install -r /app/requirements.txt
+
+# Copy producer code
+COPY ./producer.py /app/producer.py
+
+# Configure the container to run producer.py
+ENTRYPOINT [ "python3" ]
+CMD [ "producer.py" ]
