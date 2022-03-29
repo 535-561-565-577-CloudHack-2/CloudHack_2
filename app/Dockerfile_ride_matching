@@ -1,1 +1,11 @@
-# Dockerfile for ride matching consumer
+FROM python:3.8
+
+WORKDIR /app
+
+COPY ./requirements_ride_matching.txt /app/requirements_ride_matching.txt 
+
+RUN pip install -r requirements_ride_matching.txt
+
+COPY ./ride_matching_consumer.py /app/ride_matching_consumer.py 
+
+CMD ["python", "ride_matching_consumer.py"]
