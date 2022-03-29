@@ -1,6 +1,3 @@
-# Fill in the YAML configuration for the microservices 
-
-version: "2.1"
 services:
   rabbitMQ_server:
     image: rabbitmq:3.9-management
@@ -8,25 +5,33 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    restart:
+    #restart:
   producer:
-    image: 
-    container_name:
-    restart: 
+    #image: 
+    build: Dockerfile_producer
+    container_name: producer
+    #restart: 
     ports:
+      - 5000:5000
     depends_on:
       - rabbitMQ_server
   ride_matching:
-    image: 
-    container_name: 
+    #image: 
+    build: Dockerfile_ride_matching
+    container_name: ride_matching_consumer
     depends_on:
+      - producer
     environment:
-      - CONSUMER_ID=
-      - PRODUCER_ADDRESS=
+      - CONSUMER_ID=1
+      - PRODUCER_ADDRESS=producer:5000
+    deploy:
+      mode: replicated
+      replicas: 2
   ride_database:
-    image: 
-    container_name:
-    restart: 
+    #image: 
+    build: Dockerfile_database
+    container_name: ride_database_consumer
+    #restart: 
     depends_on:
       - producer
   

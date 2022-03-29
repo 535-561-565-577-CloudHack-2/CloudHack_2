@@ -30,7 +30,7 @@ def new_ride():
     
     # connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbit"))
     except pika.exceptions.AMQPConnectionError as exc:
         return "Failed to connect to RabbitMQ service. Message wont be sent."
 
