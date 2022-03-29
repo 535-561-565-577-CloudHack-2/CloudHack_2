@@ -18,25 +18,33 @@ def main():
         time.sleep(ride_details['time'])
         print(" [x] Task %r done by %r" %  (method.delivery_tag, consumer_id))
 
-    print(server_ip+'/new_ride_matching_consumer')
-    register = requests.post(server_ip+'/new_ride_matching_consumer', json={'consumer_id': consumer_id, "name": "Rabbit"}, verify=False)
+    try:
+        register = requests.post(server_ip+'/new_ride_matching_consumer', json={'consumer_id': consumer_id, "name": "Rabbit"}, verify=False)
 
-    if(register.status_code == 200):
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-        channel = connection.channel()
+        if(register.status_code == 200):
+            try:
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
+            except pika.exceptions.AMQPConnectionError as exc:
+                print("Failed to connect to RabbitMQ service. Message wont be sent.")
 
-        # channel.queue_declare(queue='ride_match')
+            connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+            channel = connection.channel()
 
-        channel.basic_consume(
-            queue='ride_match', 
-            auto_ack=True, 
-            on_message_callback=ride_matching_callback
-        )
+            # channel.queue_declare(queue='ride_match')
 
-        print(' [*] Waiting for messages. To exit press CTRL+C')
-        channel.start_consuming()
-    else:
-        print('Failed Request', register.status_code)
+            channel.basic_consume(
+                queue='ride_match', 
+                auto_ack=True, 
+                on_message_callback=ride_matching_callback
+            )
+
+            print(' [*] Waiting for messages. To exit press CTRL+C')
+            channel.start_consuming()
+        else:
+            print('Failed Request', register.status_code)
+
+    except Exception as e:
+        print('Invalid IP Address')
 
 
 if __name__ == '__main__':
