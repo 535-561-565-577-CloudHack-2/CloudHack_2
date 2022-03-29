@@ -17,11 +17,11 @@ def main():
         mydb = myclient["ride_details_db"] # create DB  
         rides = mydb["ride_details"] # create collection
 
-        if "ride_details" in mydb.list_collection_names(): # check if collection exists
-            x = rides.insert_one(ride_details)
-            print(" [x] Record %r inserted into DB with ID: %r\n" % (method.delivery_tag, x.inserted_id))
-        else:
-            print('Collection not created yet..')
+        print(mydb.list_collection_names())
+        x = rides.insert_one(ride_details)
+        print(" [x] Record %r inserted into DB with ID: %r\n" % (method.delivery_tag, x.inserted_id))
+
+
 
     started = False
     while not started:

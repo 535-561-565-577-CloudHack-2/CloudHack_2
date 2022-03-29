@@ -15,7 +15,7 @@ def main():
         ride_details = json.loads(body)
         print(" [x] Received %r" % body.decode())
         # print(" [x] Time is: %r" % ride_details['time'])
-        time.sleep(ride_details['time'])
+        time.sleep(float(ride_details['time']))
         print(" [x] Task %r done by %r" %  (method.delivery_tag, consumer_id))
 
     try:

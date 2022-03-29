@@ -48,7 +48,7 @@ def new_ride():
     # .form.get('time')
 
     print(" [x] Received %r" % request.json)
-    
+
     print(" [x] Publishing to ride match queue")
     channel.basic_publish(
         exchange='',
@@ -88,7 +88,7 @@ def register():
 
     registration = {"name": request.json.get('consumer_id'), "ip_address": ip_address}
     REGITRATION_LIST.append(registration)
-    print("REGITRATION_LIST: ", REGITRATION_LIST)
+    print("REGISTRATION_LIST: ", REGITRATION_LIST)
 
     return json.dumps(REGITRATION_LIST)
     

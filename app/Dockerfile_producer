@@ -18,4 +18,4 @@ COPY ./producer.py /app/producer.py
 
 # Configure the container to run producer.py
 ENTRYPOINT [ "python3" ]
-CMD [ "producer.py" ]
+CMD [ "-u", "producer.py" ]
