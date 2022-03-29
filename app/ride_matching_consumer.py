@@ -16,7 +16,9 @@ def main():
         print(" [x] Received %r" % body.decode())
         # print(" [x] Time is: %r" % ride_details['time'])
         time.sleep(float(ride_details['time']))
-        print(" [x] Task %r done by %r" %  (method.delivery_tag, consumer_id))
+        #print(" [x] Task %r done by %r" %  (method.delivery_tag, consumer_id))
+        print(" [x] Task %r done by %r" %  (ride_details['task_id'], consumer_id))
+        
 
     try:
         print("server_ip", server_ip)

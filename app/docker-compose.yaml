@@ -23,16 +23,27 @@ services:
       - rabbitMQ_server
     #environment:
     #  - FLASK_ENV=development
-  ride_matching:
+  ride_matching_1:
     #image: 
     build:
       context: .
       dockerfile: Dockerfile_ride_matching
-    container_name: ride_matching_consumer
+    container_name: ride_matching_consumer_1
     depends_on:
       - producer
     environment:
       - CONSUMER_ID=1
+      - PRODUCER_ADDRESS=http://producer:5000
+  ride_matching_2:
+    #image: 
+    build:
+      context: .
+      dockerfile: Dockerfile_ride_matching
+    container_name: ride_matching_consumer_2
+    depends_on:
+      - producer
+    environment:
+      - CONSUMER_ID=2
       - PRODUCER_ADDRESS=http://producer:5000
     #deploy:
     #  mode: replicated

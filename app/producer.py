@@ -6,6 +6,7 @@ import time
 app = Flask(__name__)
 
 REGITRATION_LIST = []
+TASK_ID_COUNT = 0
 
 @app.route("/")
 def index():
@@ -43,9 +44,12 @@ def new_ride():
     channel.queue_declare(queue='ride_match', durable=True)
     channel.queue_declare(queue='database', durable=True)
 
-    sleep_time = request.json['time']
+    #sleep_time = request.json['time']
     # .get('time')
     # .form.get('time')
+    global TASK_ID_COUNT
+    request.json['task_id'] = TASK_ID_COUNT
+    TASK_ID_COUNT += 1
 
     print(" [x] Received %r" % request.json)
 
