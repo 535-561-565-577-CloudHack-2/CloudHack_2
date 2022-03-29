@@ -3,9 +3,11 @@
 version: "2.1"
 services:
   rabbitMQ_server:
-    image: 
-    container_name: 
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq
     ports:
+      - 5672:5672
+      - 15672:15672
     restart:
   producer:
     image: 
