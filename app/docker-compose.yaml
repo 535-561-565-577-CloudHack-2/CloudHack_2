@@ -21,8 +21,8 @@ services:
       - 5000:5000
     depends_on:
       - rabbitMQ_server
-    #environment:
-    #  - FLASK_ENV=development
+    environment:
+      - PYTHONUNBUFFERED=true
   ride_matching_1:
     #image: 
     build:
